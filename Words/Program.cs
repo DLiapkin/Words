@@ -15,7 +15,17 @@ namespace Words
 
         private static bool WordValidation(String sourceWord, String enteredWord)
         {
-            foreach(char ch in enteredWord)
+            if (string.IsNullOrEmpty(sourceWord))
+            {
+                throw new ArgumentNullException(sourceWord);
+            }
+
+            if (string.IsNullOrEmpty(enteredWord))
+            {
+                throw new ArgumentNullException(enteredWord);
+            }
+
+            foreach (char ch in enteredWord)
             {
                 bool isPresent = false;
                 foreach(char letter in sourceWord)
@@ -32,7 +42,7 @@ namespace Words
             }
 
             int counter;
-            for(int i = 0; i < enteredWord.Length; i++)
+            for (int i = 0; i < enteredWord.Length; i++)
             {
                 counter = 0;
                 char currentLetter = enteredWord[i];
@@ -45,13 +55,13 @@ namespace Words
                 }
                 foreach (char ch in enteredWord)
                 {
-                    if(currentLetter == ch)
+                    if (currentLetter == ch)
                     {
                         counter--;
                     }
                 }
 
-                if(counter < 0)
+                if (counter < 0)
                 {
                     return false;
                 }
@@ -65,8 +75,16 @@ namespace Words
             bool player1 = true, player2 = false, gameStatus = true;
             List<String> usedWords = new List<String>();
             String sourceWord;
-            Console.WriteLine("Enter word to start the game.");
-            sourceWord = Console.ReadLine();
+            Console.WriteLine("Enter word to start the game. Word length must be in range from 8 to 30 letters.");
+            while (true)
+            {
+                sourceWord = Console.ReadLine();
+                if (sourceWord.Length > 8 && sourceWord.Length < 30)
+                {
+                    break;
+                }
+                Console.WriteLine("Incorrect word length!\nTry again!");
+            }
 
             while (gameStatus)
             {
@@ -79,7 +97,6 @@ namespace Words
                 {
                     Console.Write("Player 2\n");
                 }
-
                 Console.WriteLine("Enter word:");
                 String enteredWord = Console.ReadLine();
 
