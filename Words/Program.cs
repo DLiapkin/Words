@@ -13,18 +13,24 @@ namespace Words
 
         }
 
+        /// <summary>
+        /// Checks the entered word so that it consists of the letters of the source word
+        /// </summary>
+        /// <param name="sourceWord">A string that contains source word</param>
+        /// <param name="enteredWord">A string that contains source word</param>
+        /// <returns>true if the <see cref="enteredWord"/> parameter was valid; otherwise, false.</returns>
         private static bool WordValidation(String sourceWord, String enteredWord)
         {
             if (string.IsNullOrEmpty(sourceWord))
             {
-                throw new ArgumentNullException(sourceWord);
+                throw new ArgumentException(sourceWord);
             }
 
             if (string.IsNullOrEmpty(enteredWord))
             {
-                throw new ArgumentNullException(enteredWord);
+                throw new ArgumentException(enteredWord);
             }
-
+ 
             foreach (char ch in enteredWord)
             {
                 bool isPresent = false;
@@ -78,7 +84,7 @@ namespace Words
             Console.WriteLine("Enter word to start the game. Word length must be in range from 8 to 30 letters.");
             while (true)
             {
-                sourceWord = Console.ReadLine();
+                sourceWord = Console.ReadLine().ToLower();
                 if (sourceWord.Length > 8 && sourceWord.Length < 30)
                 {
                     break;
@@ -97,8 +103,9 @@ namespace Words
                 {
                     Console.Write("Player 2\n");
                 }
+
                 Console.WriteLine("Enter word:");
-                String enteredWord = Console.ReadLine();
+                String enteredWord = Console.ReadLine().ToLower();
 
                 if(!WordValidation(sourceWord, enteredWord) || usedWords.Contains(enteredWord))
                 {
@@ -111,6 +118,7 @@ namespace Words
                     {
                         Console.WriteLine("Wrong word!\nPlayer 1 wins.");
                     }
+                    Console.ReadKey();
                 }
                 else
                 {
