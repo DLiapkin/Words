@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Timers;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -76,26 +77,34 @@ namespace Words
             return true;
         }
 
-        static void Main(string[] args)
+        /// <summary>
+        /// Says who has won the game
+        /// </summary>
+        /// <param name="phase">A bool that indicates player phase; true - first player, false - second</param>
+        private static void WhoWon(bool phase)
         {
-            bool player1 = true, player2 = false, gameStatus = true;
+            if (phase)
+            {
+                Console.WriteLine("Wrong word!\nPlayer 2 wins.");
+            }
+            else
+            {
+                Console.WriteLine("Wrong word!\nPlayer 1 wins.");
+            }
+        }
+
+        /// <summary>
+        /// Main game cycle
+        /// </summary>
+        /// <param name="sourceWord">A String that contains source word</param>
+        private static void GameCycle(String sourceWord)
+        {
+            bool playerPhase = true;
             List<String> usedWords = new List<String>();
-            String sourceWord;
-            Console.WriteLine("Enter word to start the game. Word length must be in range from 8 to 30 letters.");
             while (true)
             {
-                sourceWord = Console.ReadLine().ToLower();
-                if (sourceWord.Length > 8 && sourceWord.Length < 30)
-                {
-                    break;
-                }
-                Console.WriteLine("Incorrect word length!\nTry again!");
-            }
-
-            while (gameStatus)
-            {
                 Console.Write("Current player: ");
-                if (player1)
+                if (playerPhase)
                 {
                     Console.Write("Player 1\n");
                 }
@@ -107,35 +116,41 @@ namespace Words
                 Console.WriteLine("Enter word:");
                 String enteredWord = Console.ReadLine().ToLower();
 
-                if(!WordValidation(sourceWord, enteredWord) || usedWords.Contains(enteredWord))
+                if (!WordValidation(sourceWord, enteredWord) || usedWords.Contains(enteredWord))
                 {
-                    gameStatus = false;
-                    if(player1)
-                    {
-                        Console.WriteLine("Wrong word!\nPlayer 2 wins.");
-                    }
-                    if (player2)
-                    {
-                        Console.WriteLine("Wrong word!\nPlayer 1 wins.");
-                    }
-                    Console.ReadKey();
+                    WhoWon(playerPhase);
+                    break;
                 }
                 else
                 {
                     usedWords.Add(enteredWord);
-                    if (player1)
+                    if (playerPhase)
                     {
-                        player1 = false;
-                        player2 = true;
-                        continue;
+                        playerPhase = false;
                     }
-                    if (player2)
+                    else
                     {
-                        player1 = true;
-                        player2 = false;
+                        playerPhase = true;
                     }
                 }
             }
+        }
+
+        static void Main(string[] args)
+        {
+            String sourceWord;
+            Console.WriteLine("Enter word to start the game. Word length must be in range from 8 to 30 letters.");
+            while (true)
+            {
+                sourceWord = Console.ReadLine().ToLower();
+                if (sourceWord.Length > 8 && sourceWord.Length < 30)
+                {
+                    break;
+                }
+                Console.WriteLine("Incorrect word length!\nTry again!");
+            }
+            GameCycle(sourceWord);
+            Console.ReadKey();
         }
     }
 }
