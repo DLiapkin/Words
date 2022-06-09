@@ -15,7 +15,49 @@ namespace Words
 
         private static bool WordValidation(String sourceWord, String enteredWord)
         {
+            foreach(char ch in enteredWord)
+            {
+                bool isPresent = false;
+                foreach(char letter in sourceWord)
+                {
+                    if(ch == letter)
+                    {
+                        isPresent = true;
+                    }
+                }
+                if(!isPresent)
+                {
+                    return false;
+                }
+            }
 
+            int counter;
+            for(int i = 0; i < enteredWord.Length; i++)
+            {
+                counter = 0;
+                char currentLetter = enteredWord[i];
+                foreach (char ch in sourceWord)
+                {
+                    if (currentLetter == ch)
+                    {
+                        counter++;
+                    }
+                }
+                foreach (char ch in enteredWord)
+                {
+                    if(currentLetter == ch)
+                    {
+                        counter--;
+                    }
+                }
+
+                if(counter < 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         static void Main(string[] args)
@@ -26,12 +68,22 @@ namespace Words
             Console.WriteLine("Enter word to start the game.");
             sourceWord = Console.ReadLine();
 
-            while(gameStatus)
+            while (gameStatus)
             {
+                Console.Write("Current player: ");
+                if (player1)
+                {
+                    Console.Write("Player 1\n");
+                }
+                else
+                {
+                    Console.Write("Player 2\n");
+                }
+
                 Console.WriteLine("Enter word:");
                 String enteredWord = Console.ReadLine();
 
-                if(!WordValidation(sourceWord,enteredWord))
+                if(!WordValidation(sourceWord, enteredWord) || usedWords.Contains(enteredWord))
                 {
                     gameStatus = false;
                     if(player1)
@@ -50,6 +102,7 @@ namespace Words
                     {
                         player1 = false;
                         player2 = true;
+                        continue;
                     }
                     if (player2)
                     {
