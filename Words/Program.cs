@@ -101,8 +101,20 @@ namespace Words
         {
             bool playerPhase = true;
             List<String> usedWords = new List<String>();
+            Timer aTimer;
             while (true)
             {
+                // setting the Timer
+                aTimer = new Timer(30000);
+                aTimer.Elapsed += delegate
+                {
+                    Console.WriteLine("Your time is out!");
+                    WhoWon(playerPhase);
+                    Console.ReadKey();
+                    Environment.Exit(0);
+                };
+                aTimer.Start();
+
                 Console.Write("Current player: ");
                 if (playerPhase)
                 {
@@ -113,7 +125,7 @@ namespace Words
                     Console.Write("Player 2\n");
                 }
 
-                Console.WriteLine("Enter word:");
+                Console.WriteLine("Enter the word. You have only 30 seconds.");
                 String enteredWord = Console.ReadLine().ToLower();
 
                 if (!WordValidation(sourceWord, enteredWord) || usedWords.Contains(enteredWord))
@@ -134,6 +146,10 @@ namespace Words
                     }
                 }
             }
+
+            // disposing of the Timer
+            aTimer.Stop();
+            aTimer.Close();
         }
 
         static void Main(string[] args)
