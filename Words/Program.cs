@@ -14,19 +14,29 @@ namespace Words
 
         }
 
+        // enum that represents the player's turn
+        private enum Turn
+        {
+            FirstPlayer,
+            SecondPlayer
+        }
+
+        // borders for source word
+        const int leftBorder = 8;
+        const int rightBorder = 30;
+
         /// <summary>
         /// Checks the entered word so that it consists of the letters of the source word
         /// </summary>
         /// <param name="sourceWord">A string that contains source word</param>
         /// <param name="enteredWord">A string that contains source word</param>
         /// <returns>true if the <see cref="enteredWord"/> parameter was valid; otherwise, false.</returns>
-        private static bool WordValidation(String sourceWord, String enteredWord)
+        private static bool ValidateWord(String sourceWord, String enteredWord)
         {
             if (string.IsNullOrEmpty(sourceWord))
             {
                 throw new ArgumentException(sourceWord);
             }
-
             if (string.IsNullOrEmpty(enteredWord))
             {
                 throw new ArgumentException(enteredWord);
@@ -67,7 +77,6 @@ namespace Words
                         counter--;
                     }
                 }
-
                 if (counter < 0)
                 {
                     return false;
@@ -80,10 +89,10 @@ namespace Words
         /// <summary>
         /// Says who has won the game
         /// </summary>
-        /// <param name="phase">A bool that indicates player phase; true - first player, false - second</param>
-        private static void WhoWon(bool phase)
+        /// <param name="player">An enum that indicates player phase</param>
+        private static void PrintWinner(Turn player)
         {
-            if (phase)
+            if (player == Turn.FirstPlayer)
             {
                 Console.WriteLine("Wrong word!\nPlayer 2 wins.");
             }
@@ -97,10 +106,10 @@ namespace Words
         /// Main game cycle
         /// </summary>
         /// <param name="sourceWord">A String that contains source word</param>
-        private static void GameCycle(String sourceWord)
+        private static void GameLoop(String sourceWord)
         {
-            bool playerPhase = true;
             List<String> usedWords = new List<String>();
+            Turn player = Turn.FirstPlayer;
             Timer aTimer;
             while (true)
             {
@@ -109,14 +118,14 @@ namespace Words
                 aTimer.Elapsed += delegate
                 {
                     Console.WriteLine("Your time is out!");
-                    WhoWon(playerPhase);
+                    PrintWinner(player);
                     Console.ReadKey();
                     Environment.Exit(0);
                 };
                 aTimer.Start();
 
                 Console.Write("Current player: ");
-                if (playerPhase)
+                if (player == Turn.FirstPlayer)
                 {
                     Console.Write("Player 1\n");
                 }
@@ -124,29 +133,27 @@ namespace Words
                 {
                     Console.Write("Player 2\n");
                 }
-
                 Console.WriteLine("Enter the word. You have only 30 seconds.");
                 String enteredWord = Console.ReadLine().ToLower();
 
-                if (!WordValidation(sourceWord, enteredWord) || usedWords.Contains(enteredWord))
+                if (!ValidateWord(sourceWord, enteredWord) || usedWords.Contains(enteredWord))
                 {
-                    WhoWon(playerPhase);
+                    PrintWinner(player);
                     break;
                 }
                 else
                 {
                     usedWords.Add(enteredWord);
-                    if (playerPhase)
+                    if (player == Turn.FirstPlayer)
                     {
-                        playerPhase = false;
+                        player = Turn.SecondPlayer;
                     }
                     else
                     {
-                        playerPhase = true;
+                        player = Turn.FirstPlayer;
                     }
                 }
             }
-
             // disposing of the Timer
             aTimer.Stop();
             aTimer.Close();
@@ -155,17 +162,17 @@ namespace Words
         static void Main(string[] args)
         {
             String sourceWord;
-            Console.WriteLine("Enter word to start the game. Word length must be in range from 8 to 30 letters.");
+            Console.WriteLine($"Enter word to start the game. Word length must be in range from {leftBorder} to {rightBorder} letters.");
             while (true)
             {
                 sourceWord = Console.ReadLine().ToLower();
-                if (sourceWord.Length > 8 && sourceWord.Length < 30)
+                if (sourceWord.Length > leftBorder && sourceWord.Length < rightBorder)
                 {
                     break;
                 }
                 Console.WriteLine("Incorrect word length!\nTry again!");
             }
-            GameCycle(sourceWord);
+            GameLoop(sourceWord);
             Console.ReadKey();
         }
     }
