@@ -31,7 +31,7 @@ namespace Words
         /// <param name="sourceWord">A string that contains source word</param>
         /// <param name="enteredWord">A string that contains source word</param>
         /// <returns>true if the <see cref="enteredWord"/> parameter was valid; otherwise, false.</returns>
-        private static bool ValidateWord(String sourceWord, String enteredWord)
+        private static bool ValidateWord(string sourceWord, string enteredWord)
         {
             if (string.IsNullOrEmpty(sourceWord))
             {
@@ -41,42 +41,22 @@ namespace Words
             {
                 throw new ArgumentException(enteredWord);
             }
- 
+
+            // checks for the presence of letters in the source word
             foreach (char ch in enteredWord)
             {
-                bool isPresent = false;
-                foreach(char letter in sourceWord)
-                {
-                    if(ch == letter)
-                    {
-                        isPresent = true;
-                    }
-                }
-                if(!isPresent)
+                if (!sourceWord.Contains(ch))
                 {
                     return false;
                 }
             }
 
+            // checks if the number of letters in the entered word and the source word match
             int counter;
             for (int i = 0; i < enteredWord.Length; i++)
             {
-                counter = 0;
                 char currentLetter = enteredWord[i];
-                foreach (char ch in sourceWord)
-                {
-                    if (currentLetter == ch)
-                    {
-                        counter++;
-                    }
-                }
-                foreach (char ch in enteredWord)
-                {
-                    if (currentLetter == ch)
-                    {
-                        counter--;
-                    }
-                }
+                counter = CountLetters(currentLetter, sourceWord) - CountLetters(currentLetter, enteredWord);
                 if (counter < 0)
                 {
                     return false;
@@ -84,6 +64,37 @@ namespace Words
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Counts a number of occurences of letter in the word
+        /// </summary>
+        /// <param name="letter">A letter that needs to be found</param>
+        /// <param name="word">A word in which searching will be proceeded</param>
+        /// <returns>int that represents the number of occurences</returns>
+        private static int CountLetters(char letter, string word)
+        {
+            int counter = 0;
+            string temporary = word;
+            while (true)
+            {
+                int index = temporary.IndexOf(letter);
+                if (index != -1)
+                {
+                    if (index == word.Length - 1)
+                    {
+                        counter++;
+                        break;
+                    }
+                    temporary = temporary.Substring(index + 1);
+                    counter++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return counter;
         }
 
         /// <summary>
@@ -106,9 +117,9 @@ namespace Words
         /// Main game cycle
         /// </summary>
         /// <param name="sourceWord">A String that contains source word</param>
-        private static void GameLoop(String sourceWord)
+        private static void GameLoop(string sourceWord)
         {
-            List<String> usedWords = new List<String>();
+            List<string> usedWords = new List<string>();
             Turn player = Turn.FirstPlayer;
             Timer aTimer;
             while (true)
@@ -124,6 +135,8 @@ namespace Words
                 };
                 aTimer.Start();
 
+                Console.Clear();
+                Console.WriteLine($"Source word is {sourceWord}.");
                 Console.Write("Current player: ");
                 if (player == Turn.FirstPlayer)
                 {
@@ -134,7 +147,7 @@ namespace Words
                     Console.Write("Player 2\n");
                 }
                 Console.WriteLine("Enter the word. You have only 30 seconds.");
-                String enteredWord = Console.ReadLine().ToLower();
+                string enteredWord = Console.ReadLine().ToLower();
 
                 if (!ValidateWord(sourceWord, enteredWord) || usedWords.Contains(enteredWord))
                 {
@@ -161,7 +174,7 @@ namespace Words
 
         static void Main(string[] args)
         {
-            String sourceWord;
+            string sourceWord;
             Console.WriteLine($"Enter word to start the game. Word length must be in range from {leftBorder} to {rightBorder} letters.");
             while (true)
             {
