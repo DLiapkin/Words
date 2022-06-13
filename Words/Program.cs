@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Timers;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Words
 {
@@ -30,7 +28,7 @@ namespace Words
         /// </summary>
         /// <param name="sourceWord">A string that contains source word</param>
         /// <param name="enteredWord">A string that contains source word</param>
-        /// <returns>true if the <see cref="enteredWord"/> parameter was valid; otherwise, false.</returns>
+        /// <returns>true if the <paramref ref="enteredWord"/> parameter was valid; otherwise, false.</returns>
         private static bool ValidateWord(string sourceWord, string enteredWord)
         {
             if (string.IsNullOrEmpty(sourceWord))
@@ -76,23 +74,17 @@ namespace Words
         {
             int counter = 0;
             string temporary = word;
-            while (true)
+            int index = 0;
+            while (index != -1 && index < temporary.Length)
             {
-                int index = temporary.IndexOf(letter);
-                if (index != -1)
+                index = temporary.IndexOf(letter);
+                if (index == word.Length - 1)
                 {
-                    if (index == word.Length - 1)
-                    {
-                        counter++;
-                        break;
-                    }
-                    temporary = temporary.Substring(index + 1);
                     counter++;
-                }
-                else
-                {
                     break;
                 }
+                temporary = temporary.Substring(index + 1);
+                counter++;
             }
             return counter;
         }
