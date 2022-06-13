@@ -11,13 +11,6 @@ namespace Words
 
         }
 
-        // enum that represents the player's turn
-        private enum Turn
-        {
-            FirstPlayer,
-            SecondPlayer
-        }
-
         // borders for source word
         const int leftBorder = 8;
         const int rightBorder = 30;
@@ -89,72 +82,114 @@ namespace Words
         }
 
         /// <summary>
-        /// Says who has won the game
+        /// Summarizes the results of the game
         /// </summary>
-        /// <param name="player">An enum that indicates player phase</param>
-        private static void PrintWinner(Turn player)
+        /// <param name="player">Variable that represents current player that lost the game</param>
+        /// <param name="firstPlayer">Variable that represents the first player</param>
+        /// <param name="secondPlayer">Variable that represents the second player</param>
+        private static void SummarizeResult(Player player, Player firstPlayer, Player secondPlayer)
         {
-            if (player == Turn.FirstPlayer)
+            if (player.Equals(firstPlayer))
             {
-                Console.WriteLine("Wrong word!\nPlayer 2 wins.");
+                Console.WriteLine($"Player {secondPlayer.Name} wins.");
+                secondPlayer.ScoreWin();
             }
             else
             {
-                Console.WriteLine("Wrong word!\nPlayer 1 wins.");
+                Console.WriteLine($"Player {firstPlayer.Name} wins.");
+                firstPlayer.ScoreWin();
             }
+        }
+
+        /// <summary>
+        /// Executes entered command
+        /// </summary>
+        /// <param name="command">A string that represents entered command</param>
+        /// <param name="usedWords">List that contains already used words</param>
+        /// <param name="currentPlayer">Variable that represents the current player</param>
+        private static void RunCommand(string command, List<string> usedWords, Player currentPlayer)
+        {
+            if (command.Equals("/show-words"))
+            {
+                foreach (string word in usedWords)
+                {
+                    Console.WriteLine(word + " ");
+                }
+            }
+            else if (command.Equals("/score"))
+            {
+                currentPlayer.PrintScore();
+            }
+            else if (command.Equals("/total-score"))
+            {
+                Console.WriteLine("Not implemented yet");
+            }        
         }
 
         /// <summary>
         /// Main game cycle
         /// </summary>
         /// <param name="sourceWord">A String that contains source word</param>
-        private static void GameLoop(string sourceWord)
+        /// <param name="firstPlayer">Variable that represents the first player</param>
+        /// <param name="secondPlayer">Variable that represents the second player</param>
+        private static void GameLoop(string sourceWord, Player firstPlayer, Player secondPlayer)
         {
             List<string> usedWords = new List<string>();
-            Turn player = Turn.FirstPlayer;
+            bool isCommand = false;
+            string enteredWord;
+            Player currentPlayer = firstPlayer;
             Timer aTimer;
             while (true)
             {
                 // setting the Timer
-                aTimer = new Timer(30000);
+                aTimer = new Timer(300000);
                 aTimer.Elapsed += delegate
                 {
                     Console.WriteLine("Your time is out!");
-                    PrintWinner(player);
+                    SummarizeResult(currentPlayer, firstPlayer, secondPlayer);
                     Console.ReadKey();
                     Environment.Exit(0);
                 };
                 aTimer.Start();
 
-                Console.Clear();
-                Console.WriteLine($"Source word is {sourceWord}.");
-                Console.Write("Current player: ");
-                if (player == Turn.FirstPlayer)
+                do
                 {
-                    Console.Write("Player 1\n");
-                }
-                else
-                {
-                    Console.Write("Player 2\n");
-                }
-                Console.WriteLine("Enter the word. You have only 30 seconds.");
-                string enteredWord = Console.ReadLine().ToLower();
+                    Console.Clear();
+                    Console.WriteLine($"Source word is {sourceWord}.");
+                    Console.WriteLine($"Current player: {currentPlayer.Name}");
+                    Console.WriteLine("Enter the word. You have only 30 seconds.");
+                    Console.WriteLine("Or you can use these commands /show-words, /score, /total-score.");
+                    enteredWord = Console.ReadLine().ToLower();
+                    aTimer.Stop();
+                    if (enteredWord.Equals("/show-words") || enteredWord.Equals("/score") || enteredWord.Equals("/total-score"))
+                    {
+                        RunCommand(enteredWord, usedWords, currentPlayer);
+                        isCommand = true;
+                        Console.ReadKey();
+                        aTimer.Start();
+                    }
+                    else
+                    {
+                        isCommand = false;
+                    }
+                } 
+                while (isCommand);
 
                 if (!ValidateWord(sourceWord, enteredWord) || usedWords.Contains(enteredWord))
                 {
-                    PrintWinner(player);
+                    SummarizeResult(currentPlayer, firstPlayer, secondPlayer);
                     break;
                 }
                 else
                 {
                     usedWords.Add(enteredWord);
-                    if (player == Turn.FirstPlayer)
+                    if (currentPlayer.Equals(firstPlayer))
                     {
-                        player = Turn.SecondPlayer;
+                        currentPlayer = secondPlayer;
                     }
                     else
                     {
-                        player = Turn.FirstPlayer;
+                        currentPlayer = firstPlayer;
                     }
                 }
             }
@@ -166,17 +201,36 @@ namespace Words
         static void Main(string[] args)
         {
             string sourceWord;
-            Console.WriteLine($"Enter word to start the game. Word length must be in range from {leftBorder} to {rightBorder} letters.");
-            while (true)
+            string playerName;
+            Player player1, player2;
+            bool isFinished = false;
+            Console.WriteLine($"Enter name of the first player.");
+            playerName = Console.ReadLine();
+            player1 = new Player(playerName);
+            Console.WriteLine($"Enter name of the second player.");
+            playerName = Console.ReadLine();
+            player2 = new Player(playerName);
+            while (!isFinished)
             {
-                sourceWord = Console.ReadLine().ToLower();
-                if (sourceWord.Length > leftBorder && sourceWord.Length < rightBorder)
+                Console.WriteLine($"Enter word to start the game. Word length must be in range from {leftBorder} to {rightBorder} letters.");
+                while (true)
                 {
-                    break;
+                    sourceWord = Console.ReadLine().ToLower();
+                    if (sourceWord.Length > leftBorder && sourceWord.Length < rightBorder)
+                    {
+                        break;
+                    }
+                    Console.WriteLine("Incorrect word length!\nTry again!");
                 }
-                Console.WriteLine("Incorrect word length!\nTry again!");
+                GameLoop(sourceWord, player1, player2);
+                string variant;
+                Console.WriteLine("Do you want to rematch?\n Yes or no?");
+                variant = Console.ReadLine().ToLower();
+                if (!variant.Equals("yes"))
+                {
+                    isFinished = true;
+                }
             }
-            GameLoop(sourceWord);
             Console.ReadKey();
         }
     }

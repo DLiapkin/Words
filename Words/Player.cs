@@ -6,7 +6,7 @@ namespace Words
     class Player
     {
         private string name;
-        private int score;
+        private int score = 0;
 
         public string Name
         {
@@ -53,7 +53,12 @@ namespace Words
 
         public void PrintScore()
         {
-            Console.WriteLine($"{this.name}:\t{this.score}");
+            Console.WriteLine($"{this.Name}:\t{this.Score}");
+        }
+
+        public void ScoreWin()
+        {
+            this.Score++;
         }
 
     }
