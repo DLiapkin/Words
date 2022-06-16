@@ -131,6 +131,8 @@ namespace Words
                 Console.WriteLine($"Player {firstPlayer.Name} wins.");
                 firstPlayer.ScoreWin();
             }
+            DataSerializer.Serialize(this.firstPlayer, "playersScore.json");
+            DataSerializer.Serialize(this.secondPlayer, "playersScore.json");
         }
 
         /// <summary>
@@ -149,11 +151,13 @@ namespace Words
             }
             else if (command.Equals("/score"))
             {
+                Console.WriteLine("Score table\nName\tScore");
                 currentPlayer.PrintScore();
             }
             else if (command.Equals("/total-score"))
             {
-                Console.WriteLine("Not implemented yet");
+                Console.WriteLine("Total score table\nName\tScore");
+                List<Player> players = DataSerializer.DeserializeAll("playersScore.json");
             }
         }
 
