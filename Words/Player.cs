@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Words
 {
@@ -40,15 +40,16 @@ namespace Words
             }
         }
 
-        public Player(string playerName)
-        {
-            Name = playerName;
-        }
-
-        Player(string name, int score)
+        [JsonConstructor]
+        public Player(string name, int score)
         {
             Name = name;
             Score = score;
+        }
+
+        public Player(string playerName)
+        {
+            Name = playerName;
         }
 
         public void PrintScore()
@@ -60,6 +61,5 @@ namespace Words
         {
             this.Score++;
         }
-
     }
 }
