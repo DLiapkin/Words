@@ -15,11 +15,11 @@ namespace Words
         /// <returns>true if the <paramref ref="enteredWord"/> parameter was valid; otherwise, false.</returns>
         public static bool ValidateWord(string sourceWord, string enteredWord)
         {
-            if (string.IsNullOrEmpty(sourceWord))
+            if (String.IsNullOrEmpty(sourceWord))
             {
                 throw new ArgumentException(sourceWord);
             }
-            if (string.IsNullOrEmpty(enteredWord))
+            if (String.IsNullOrEmpty(enteredWord))
             {
                 throw new ArgumentException(enteredWord);
             }

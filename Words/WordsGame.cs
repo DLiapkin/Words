@@ -14,19 +14,19 @@ namespace Words
         private List<string> usedWords;
 
         // borders for source word
-        private const int leftBorder = 8;
-        private const int rightBorder = 30;
+        private const int LeftBorder = 8;
+        private const int RightBorder = 30;
 
         public string SourceWord
         {
             get => sourceWord;
             private set
             {
-                if (string.IsNullOrEmpty(value))
+                if (String.IsNullOrEmpty(value))
                 {
                     throw new ArgumentException("Entered source word is either null or empty!", value);
                 }
-                if (value.Length > leftBorder && value.Length < rightBorder)
+                if (value.Length > LeftBorder && value.Length < RightBorder)
                 {
                     sourceWord = value.ToLower();
                 }
@@ -174,7 +174,7 @@ namespace Words
             bool isFinished = false;
             while (!isFinished)
             {
-                Console.WriteLine($"Enter word to start the game. Word length must be in range from {leftBorder} to {rightBorder} letters.");
+                Console.WriteLine($"Enter word to start the game. Word length must be in range from {LeftBorder} to {RightBorder} letters.");
                 SourceWord = Console.ReadLine().ToLower();
                 GameLoop();
                 string variant;

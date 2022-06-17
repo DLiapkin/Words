@@ -13,7 +13,7 @@ namespace Words
             get => name;
             private set
             {
-                if (string.IsNullOrEmpty(value))
+                if (String.IsNullOrEmpty(value))
                 {
                     throw new ArgumentException(value);
                 }

@@ -22,7 +22,7 @@ namespace Words
             {
                 throw new ArgumentNullException("Player is null!");
             }
-            if (string.IsNullOrEmpty(filename))
+            if (String.IsNullOrEmpty(filename))
             {
                 throw new ArgumentNullException("Invalid filename!");
             }
@@ -70,7 +70,7 @@ namespace Words
             { 
                 throw new ArgumentException(filename);
             }
-            if (string.IsNullOrEmpty(name))
+            if (String.IsNullOrEmpty(name))
             {
                 throw new ArgumentException(name);
             }
