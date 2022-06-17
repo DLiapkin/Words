@@ -6,11 +6,28 @@ using System.IO;
 
 namespace Words
 {
+    /// <summary>
+    /// Static class that helps with player's serialization and deserialization
+    /// </summary>
     static class DataSerializer
     {
+        /// <summary>
+        /// Serializes player in json file with entered name
+        /// </summary>
+        /// <param name="data">An object that represents player</param>
+        /// <param name="filename">A string that represents json file's name</param>
         public static void Serialize(Player data, string filename)
         {
-            if(File.Exists(filename))
+            if (data == null)
+            {
+                throw new ArgumentNullException("Player is null!");
+            }
+            if (string.IsNullOrEmpty(filename))
+            {
+                throw new ArgumentNullException("Invalid filename!");
+            }
+
+            if (File.Exists(filename))
             {
                 string jsonData = File.ReadAllText(filename);
                 string resultData;
@@ -41,6 +58,12 @@ namespace Words
             }
         }
 
+        /// <summary>
+        /// Deserializes one player by it's name from file with entered name
+        /// </summary>
+        /// <param name="name">A string that represents player's name</param>
+        /// <param name="filename">A string that represents json file's name</param>
+        /// <returns>A player if there was a record with such <paramref ref="name"/> parameter; otherwise, null.</returns>
         public static Player DeserializeOneElement(string name, string filename)
         {
             if (!File.Exists(filename)) 
@@ -67,6 +90,11 @@ namespace Words
             return requestedPlayer;
         }
 
+        /// <summary>
+        /// Deserializes all players from file with entered name
+        /// </summary>
+        /// <param name="filename">A string that represents json file's name</param>
+        /// <returns>A list of players.</returns>
         public static List<Player> DeserializeAll(string filename)
         {
             if (!File.Exists(filename))

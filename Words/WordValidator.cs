@@ -2,6 +2,9 @@
 
 namespace Words
 {
+    /// <summary>
+    /// Static class that helps with validating the word
+    /// </summary>
     static class WordValidator
     {
         /// <summary>

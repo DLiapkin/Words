@@ -8,6 +8,7 @@ namespace Words
     {
         private Player firstPlayer;
         private Player secondPlayer;
+        private Player currentPlayer;
 
         private string sourceWord;
         private List<string> usedWords;
@@ -23,18 +24,21 @@ namespace Words
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new ArgumentException(value);
+                    throw new ArgumentException("Entered source word is either null or empty!", value);
                 }
                 if (value.Length > leftBorder && value.Length < rightBorder)
                 {
-                    this.sourceWord = value.ToLower();
+                    sourceWord = value.ToLower();
                 }
                 else
                 {
-                    throw new ArgumentException(value);
+                    throw new ArgumentException($"Entered source word length doesn't match with interval.", value);
                 }
             }
         }
+
+        // handles different console closing signals
+        private static SignalHandler signalHandler;
 
         public WordsGame(Player player1, Player player2)
         {
@@ -45,10 +49,9 @@ namespace Words
         /// <summary>
         /// Summarizes the results of the game
         /// </summary>
-        /// <param name="player">Variable that represents current player that lost the game</param>
-        private void SummarizeResult(Player player)
+        private void SummarizeResult()
         {
-            if (player.Equals(this.firstPlayer))
+            if (currentPlayer.Equals(firstPlayer))
             {
                 Console.WriteLine($"Player {secondPlayer.Name} wins.");
                 secondPlayer.ScoreWin();
@@ -58,16 +61,15 @@ namespace Words
                 Console.WriteLine($"Player {firstPlayer.Name} wins.");
                 firstPlayer.ScoreWin();
             }
-            DataSerializer.Serialize(this.firstPlayer, "playersScore.json");
-            DataSerializer.Serialize(this.secondPlayer, "playersScore.json");
+            DataSerializer.Serialize(firstPlayer, "playersScore.json");
+            DataSerializer.Serialize(secondPlayer, "playersScore.json");
         }
 
         /// <summary>
         /// Executes entered command
         /// </summary>
         /// <param name="command">A string that represents entered command</param>
-        /// <param name="currentPlayer">Variable that represents the current player</param>
-        private void RunCommand(string command, Player currentPlayer)
+        private void RunCommand(string command)
         {
             if (command.Equals("/show-words"))
             {
@@ -97,11 +99,14 @@ namespace Words
         /// </summary>
         private void GameLoop()
         {
-            this.usedWords = new List<string>();
+            usedWords = new List<string>();
             bool isCommand = false;
             string enteredWord;
-            Player currentPlayer = firstPlayer;
+            currentPlayer = firstPlayer;
             Timer aTimer;
+            // setting the signal on console closing handler
+            signalHandler += HandleConsoleSignal;
+            ConsoleHelper.SetSignalHandler(signalHandler, true);
             while (true)
             {
                 // setting the Timer
@@ -109,7 +114,7 @@ namespace Words
                 aTimer.Elapsed += delegate
                 {
                     Console.WriteLine("Your time is out!");
-                    SummarizeResult(currentPlayer);
+                    SummarizeResult();
                     Console.ReadKey();
                     Environment.Exit(0);
                 };
@@ -118,7 +123,7 @@ namespace Words
                 do
                 {
                     Console.Clear();
-                    Console.WriteLine($"Source word is {this.sourceWord}.");
+                    Console.WriteLine($"Source word is {sourceWord}.");
                     Console.WriteLine($"Current player: {currentPlayer.Name}");
                     Console.WriteLine("Enter the word. You have only 30 seconds.");
                     Console.WriteLine("Or you can use these commands /show-words, /score, /total-score.");
@@ -126,7 +131,7 @@ namespace Words
                     aTimer.Stop();
                     if (enteredWord.Equals("/show-words") || enteredWord.Equals("/score") || enteredWord.Equals("/total-score"))
                     {
-                        RunCommand(enteredWord, currentPlayer);
+                        RunCommand(enteredWord);
                         isCommand = true;
                         Console.ReadKey();
                         aTimer.Start();
@@ -138,14 +143,14 @@ namespace Words
                 }
                 while (isCommand);
 
-                if (!WordValidator.ValidateWord(this.sourceWord, enteredWord) || this.usedWords.Contains(enteredWord))
+                if (!WordValidator.ValidateWord(sourceWord, enteredWord) || usedWords.Contains(enteredWord))
                 {
-                    SummarizeResult(currentPlayer);
+                    SummarizeResult();
                     break;
                 }
                 else
                 {
-                    this.usedWords.Add(enteredWord);
+                    usedWords.Add(enteredWord);
                     if (currentPlayer.Equals(firstPlayer))
                     {
                         currentPlayer = secondPlayer;
@@ -161,14 +166,17 @@ namespace Words
             aTimer.Close();
         }
 
+        /// <summary>
+        /// Word game's entry point
+        /// </summary>
         public void Start()
         {
             bool isFinished = false;
             while (!isFinished)
             {
                 Console.WriteLine($"Enter word to start the game. Word length must be in range from {leftBorder} to {rightBorder} letters.");
-                this.SourceWord = Console.ReadLine().ToLower();
-                this.GameLoop();
+                SourceWord = Console.ReadLine().ToLower();
+                GameLoop();
                 string variant;
                 Console.WriteLine("Do you want to rematch?\n Yes or no?");
                 variant = Console.ReadLine().ToLower();
@@ -178,6 +186,15 @@ namespace Words
                 }
             }
             Console.ReadKey();
+        }
+
+        /// <summary>
+        /// Executes results summarizing on console closing
+        /// </summary>
+        /// <param name="consoleSignal">Signal which is representing by what means console was closed</param>
+        private void HandleConsoleSignal(ConsoleSignal consoleSignal)
+        {
+            SummarizeResult();
         }
     }
 }

@@ -52,14 +52,20 @@ namespace Words
             Name = playerName;
         }
 
+        /// <summary>
+        /// Prints players Name and Score in formatted form
+        /// </summary>
         public void PrintScore()
         {
-            Console.WriteLine($"{this.Name}:\t{this.Score}");
+            Console.WriteLine($"{Name}:\t{Score}");
         }
 
+        /// <summary>
+        /// Scores win for player
+        /// </summary>
         public void ScoreWin()
         {
-            this.Score++;
+            Score++;
         }
     }
 }
